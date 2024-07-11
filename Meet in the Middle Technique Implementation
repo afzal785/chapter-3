@@ -1,0 +1,46 @@
+from itertools import chain, combinations
+
+def subsets(arr):
+    return chain(*[combinations(arr, i) for i in range(len(arr)+1)])
+
+def closest_subset_sum(arr, target):
+    n = len(arr)
+    half = n // 2
+    left_half = list(subsets(arr[:half]))
+    right_half = list(subsets(arr[half:]))
+    
+    left_half_sums = [sum(subset) for subset in left_half]
+    right_half_sums = [sum(subset) for subset in right_half]
+    
+    left_half_sums.sort()
+    right_half_sums.sort()
+    
+    closest_sum = float('inf')
+    closest_subset = None
+    
+    i = 0
+    j = len(right_half_sums) - 1
+    
+    while i < len(left_half_sums) and j >= 0:
+        current_sum = left_half_sums[i] + right_half_sums[j]
+        
+        if abs(target - current_sum) < abs(target - closest_sum):
+            closest_sum = current_sum
+            closest_subset = left_half[i], right_half[j]
+        
+        if current_sum > target:
+            j -= 1
+        else:
+            i += 1
+    
+    return closest_subset
+
+# Example 1
+set1 = [45, 34, 4, 12, 5, 2]
+target_sum1 = 42
+print(closest_subset_sum(set1, target_sum1))
+
+# Example 2
+set2 = [1, 3, 2, 7, 4, 6]
+target_sum2 = 10
+print(closest_subset_sum(set2, target_sum2))
